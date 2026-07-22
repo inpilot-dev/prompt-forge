@@ -22,6 +22,12 @@
 | 구현위임 | 투웨이 검증 (two-way-validation) | 00-silvally-alex.md |
 | 구현위임 | 실데이터 강제 (real-data-enforcement) | 00-silvally-alex.md |
 | 검증루프 | 평가 기준 자체를 업데이트 (update-the-rubric-itself) | 00-silvally-alex.md |
+| 컨텍스트주입 | 세션 재-온보딩 (session-reonboarding) | 00-silvally-alex.md |
+| 컨텍스트주입 | 프로젝트 상수 메모리화 (persistent-context-file) | 00-silvally-alex.md |
+| 리서치위임 | 레퍼런스로 스타일 학습 (learn-from-reference) | 00-silvally-alex.md |
+| 구현위임 | 작동 스냅샷·롤백 (checkpoint-rollback) | 00-silvally-alex.md |
+| 구현위임 | 멀티채널 팬아웃 변환 (multichannel-fanout) | 00-silvally-alex.md |
+| 검증루프 | 회귀 델타 디버깅 (regression-delta-debug) | 00-silvally-alex.md |
 
 > small 케이스(단일 작업)에는 문제정의+검증방법+범위제한 3~4개만 골라 쓴다. 8단계 풀세트 금지.
 > large 케이스에만 해당 단계 풀세트를 적용.
