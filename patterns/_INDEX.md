@@ -72,8 +72,26 @@
 | 스코핑 | 페인트-바이-넘버 스코핑 (paint-by-numbers-scoping) | 08-thorsten-ball.md |
 | 킥오프 | 티켓급 첫 프롬프트 (ticket-grade-first-prompt) | 08-thorsten-ball.md |
 | 검증루프 | 남이 쓴 코드로 셀프리뷰 (self-review-as-stranger) | 08-thorsten-ball.md |
+| 컨텍스트주입 | 읽고-요약시켜 이해 검증 (read-then-summarize) | 09-indragie-karunaratne.md |
+| 스코핑 | 사고 강도 계단식 조절 (escalating-think) | 09-indragie-karunaratne.md |
+| 솔루션깎기 | UI는 제안 메뉴 먼저 (design-suggestion-menu) | 09-indragie-karunaratne.md |
+| 리서치위임 | PRP 생성→실행 2커맨드 파이프라인 (prp-generate-execute) | 10-cole-medin.md |
+| 컨텍스트주입 | examples 폴더로 패턴 프라이밍 (examples-folder-priming) | 10-cole-medin.md |
+| 구현위임 | 병렬 서브에이전트 웨이브로 발산 생성 (parallel-divergent-waves) | 11-indydevdan-disler.md |
+| 솔루션깎기 | 웨이브별 점진 정교화 (progressive-sophistication) | 11-indydevdan-disler.md |
+| 컨텍스트주입 | 프롬프트를 프로그래밍 가능한 자산으로 (prompts-as-programmable-assets) | 11-indydevdan-disler.md |
+| 킥오프 | grill-me 인터뷰를 1단계로 (grill-me-first) | 12-matt-pocock.md |
+| 컨텍스트주입 | compact 금지·항상 clear (always-clear-never-compact) | 12-matt-pocock.md |
+| 검증기 | 구현/리뷰 모델 분리 + fresh 리뷰 (implement-review-model-split) | 12-matt-pocock.md |
+| PRD | PRD 체이닝 — 문서를 다음 문서의 재료로 (prd-document-chaining) | 13-russ-poldrack.md |
+| 컨텍스트주입 | 50% 컨텍스트 리프레시 임계값 (context-refresh-threshold) | 13-russ-poldrack.md |
+| 스코핑 | 정직한 실패 경계 명시 (honest-failure-boundary) | 13-russ-poldrack.md |
+| 검증루프 | 리뷰를 메모리로 되먹임 (review-to-memory) | 14-boris-cherny.md |
+| 구현위임 | 반복 명령을 precompute 커맨드로 (precompute-slash-command) | 14-boris-cherny.md |
+| 컨텍스트주입 | prompt-drift 방지 — 반복 지시를 커맨드로 (prompt-drift-prevention) | 15-avi-chawla.md |
 
 > small 케이스(단일 작업)에는 문제정의+검증방법+범위제한 3~4개만 골라 쓴다. 8단계 풀세트 금지.
 > large 케이스에만 해당 단계 풀세트를 적용.
 >
 > 해외 출처(01~08)는 C조사 Worker2 채굴. 채점·기각 근거는 `research/candidates.md`, 재현 가능한 일하는 방식은 `research/workstyle-overseas.md` 참조.
+> 신규 출처(09~15)는 병렬 4워커(Reddit·Threads/X·YouTube·블로그) 채굴 — 취합·채점 근거는 `research/scout-SUMMARY.md` 및 `research/scout-*.md`. 14·15는 경계선(상2), 기존 패턴 "갱신 트리거"로 좁혀 이식.
