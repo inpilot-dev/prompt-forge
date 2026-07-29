@@ -91,6 +91,7 @@
 | 스코핑 | 정직한 실패 경계 명시 (honest-failure-boundary) | 13-russ-poldrack.md |
 | 검증루프 | 리뷰를 메모리로 되먹임 (review-to-memory) | 14-boris-cherny.md |
 | 구현위임 | 반복 명령을 precompute 커맨드로 (precompute-slash-command) | 14-boris-cherny.md |
+| 검증기 | PR 열기 전 내가 심문당한다 (grill-before-pr) | 14-boris-cherny.md |
 | 솔루션깎기 | 알고 난 뒤 갈아엎기 (scrap-and-reimplement-with-hindsight) | 14-boris-cherny.md |
 | 컨텍스트주입 | prompt-drift 방지 — 반복 지시를 커맨드로 (prompt-drift-prevention) | 15-avi-chawla.md |
 | 구현위임 | 실패 시 즉시 중단하는 절차 커맨드 (fail-fast-command-chain) | 16-taehojo-vibecoding.md |

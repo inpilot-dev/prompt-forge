@@ -50,6 +50,20 @@
 - **왜:** 세 장치가 각각 다른 왕복을 없앤다. ① **inline bash precompute**(`!`git status``)로 모델이 상태를 추측하거나 되묻지 않고 실제 현재 상태 위에서 시작한다 — 본인 표현으로 "to make the command run quickly and avoid back-and-forth with the model". ② **`allowed-tools` 프론트매터**로 이 커맨드가 쓸 명령을 미리 허용해 승인 왕복을 없앤다. ③ **"MUST do all of the above in a single message… Do not send any other text"** 로 중간 보고·확인 질문을 차단해 한 턴에 끝낸다. [[prompt-as-file-template]]에 상태 선-계산과 권한 사전허용을 결합한 형태.
 - **출처:** Boris Cherny (@bcherny) — https://github.com/anthropics/claude-code/blob/main/.claude/commands/commit-push-pr.md (본인 커밋, 무수정) + 스레드 7/ https://x.com/bcherny/status/2007179832300581177
 
+## PR 열기 전 내가 심문당한다 (grill-before-pr)
+- **단계:** 검증기
+- **언제:** 변경분은 다 만들었고 이제 PR을 열려는 순간. 내가 이 변경을 실제로 이해하고 있는지 확신이 안 설 때.
+- **Bad:** 다 됐다 싶으면 PR을 연다. 리뷰어(사람)가 첫 질문을 던질 때 비로소 내가 모르는 구석이 드러난다.
+- **Good:** 역할을 뒤집어 **내가 심문 대상이 되고, 통과 전에는 PR을 못 열게** 막는다. 원문 항목 6a 전문:
+  > **6. Level up your prompting**
+  >
+  > a. Challenge Claude. Say "Grill me on these changes and don't make a PR until I pass your test." Make Claude be your reviewer.  Or, say "Prove to me this works" and have Claude diff behavior between main and your feature branch
+- **왜:** ⚠️ **원문에 메커니즘 설명은 없다**(있는 건 "Challenge Claude" · "Make Claude be your reviewer" 두 조각뿐). 아래는 라이브러리 자체 해석이다.
+  이 문장의 고유함은 **심문의 방향과 시점**에 있다. [[grill-me-first]](12)는 킥오프에서 *AI가 사람을 인터뷰해 스펙을 만드는* 도구다 — 아직 아무것도 안 만든 상태고, 산출물은 합의된 이해다. 이건 반대편 끝이다: **이미 만들어진 diff를 놓고, 통과/불통과 판정이 나오며, 떨어지면 PR을 안 연다.** 스펙 생성 도구가 아니라 **출구 차단기**다.
+  [[evidence-before-claim]](17)과도 방향이 다르다. 그쪽은 *에이전트가* 증거를 내놓아야 하고, 이건 *사람이* 시험을 통과해야 한다. 자기 변경분을 설명하지 못하면 그건 리뷰어에게 넘길 물건이 아니라는 뜻이고, 그 사실을 **사람 리뷰어의 시간을 쓰기 전에** 알아내는 게 이득이다.
+  후반부 "Prove to me this works" + main↔feature 동작 diff는 같은 항목이지만 [[evidence-before-claim]]·[[regression-delta-debug]]와 중복이라 별도 패턴으로 세우지 않았다. 짝으로 함께 쓰면 된다.
+- **출처:** Boris Cherny (@bcherny)가 공개한 **Claude Code 팀 팁** — https://x.com/bcherny/status/2017742741636321619 (항목 6a)
+
 ## 알고 난 뒤 갈아엎기 (scrap-and-reimplement-with-hindsight)
 - **단계:** 솔루션깎기
 - **언제:** 고치긴 했는데 결과가 어정쩡할 때. 패치를 덧대는 대신 이번 시도로 얻은 지식을 살려 다시 짜고 싶을 때.
