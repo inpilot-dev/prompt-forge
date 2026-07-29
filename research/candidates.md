@@ -77,6 +77,19 @@
 | 13 | **Anthropic Engineering 블로그** (⚠️#5와 같은 벤더 공식문서) | anthropic.com/engineering — 롱러닝 하네스·멀티에이전트·컨텍스트 엔지니어링 3편 | 조사완료 → patterns/19-anthropic-engineering-agents.md | 원문 중~상 / 원리 상 / 워크플로우 상 / 결과물 하~중 → 상 2~3 = 입장 |
 | 14 | **u/Any-Reputation8118 (SNOWFLOW)** — Reddit r/ClaudeAI | old.reddit.com/r/ClaudeAI/comments/1v94nal/ + github.com/Noniv/snowflow_demo (MIT) + 라이브 데모 | 조사완료 → patterns/20-snowflow-brief.md | 원문 상 / 원리 상 / 워크플로우 상 / 결과물 상 → 상 4 = 입장. 구현 브리프 전문 첨부 + 산출물 공개 |
 
+### 원문 재추적 (2026-07-29) — 기존 입장자 2인 승격
+
+"안 뚫렸는데 넣어둔" 패턴 감사에서 위험 높음으로 지목된 2건을 다시 캤다. **둘 다 뚫렸다.**
+
+| 파일 | 이전 | 이후 | 뚫은 방법 |
+|--|--|--|--|
+| **12 Matt Pocock** | 원문 중(grill-me 전문 미확보) = 상3 | **원문 상 = 상4** | `/watch`로 96분 영상 자막 + 16:24 화면 프레임 → `grill-me` SKILL.md **11줄 전문** 확보. 1차 워커는 자막 추출 도구가 없어 "repo 없는 인물"로 포기했던 건 |
+| **14 Boris Cherny** | 원문 중(커맨드 본문 미공개) = 상2 경계선 | **원문 상 = 상3**(경계선 해제) | GitHub API로 `commit-push-pr.md` 저작자가 `bcherny` 본인임을 확정하고 전문 확보 + 1차에 안 잡힌 2차 스레드 발견 |
+
+부수 수확: 12에서 신규 패턴 3개(칸반 DAG·모듈 맵 소유·push/pull 배치), 14에서 1개(알고 난 뒤 갈아엎기).
+
+**남은 미해결:** 16 조태호의 원리 축(유료 책 본문) — 규칙상 인용 불가라 "왜"는 재구성 유지. 06 Huntley·11 disler의 유료 게이트분도 동일.
+
 ### 미완 소스 재시도 결과
 
 - **Reddit — 뚫림.** 1차의 3중 차단 중 fetch·검색인덱스는 여전히 하드팩트지만, `claude-in-chrome` 확장이 연결돼 브라우저 경로로 원문 열람 성공(1차 SUMMARY의 재수집 조건이 충족된 상태였음). 2차 요약이 아니라 게시자 본인 텍스트만 근거로 씀.

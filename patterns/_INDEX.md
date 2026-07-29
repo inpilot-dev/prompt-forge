@@ -83,11 +83,15 @@
 | 킥오프 | grill-me 인터뷰를 1단계로 (grill-me-first) | 12-matt-pocock.md |
 | 컨텍스트주입 | compact 금지·항상 clear (always-clear-never-compact) | 12-matt-pocock.md |
 | 검증기 | 구현/리뷰 모델 분리 + fresh 리뷰 (implement-review-model-split) | 12-matt-pocock.md |
+| 스코핑 | 순차 계획 대신 칸반 DAG (kanban-dag-not-sequential-plan) | 12-matt-pocock.md |
+| PRD | 모듈 맵은 내가, 구현은 위임 (module-map-then-delegate) | 12-matt-pocock.md |
+| 컨텍스트주입 | push냐 pull이냐로 지시를 배치 (push-vs-pull-instructions) | 12-matt-pocock.md |
 | PRD | PRD 체이닝 — 문서를 다음 문서의 재료로 (prd-document-chaining) | 13-russ-poldrack.md |
 | 컨텍스트주입 | 50% 컨텍스트 리프레시 임계값 (context-refresh-threshold) | 13-russ-poldrack.md |
 | 스코핑 | 정직한 실패 경계 명시 (honest-failure-boundary) | 13-russ-poldrack.md |
 | 검증루프 | 리뷰를 메모리로 되먹임 (review-to-memory) | 14-boris-cherny.md |
 | 구현위임 | 반복 명령을 precompute 커맨드로 (precompute-slash-command) | 14-boris-cherny.md |
+| 솔루션깎기 | 알고 난 뒤 갈아엎기 (scrap-and-reimplement-with-hindsight) | 14-boris-cherny.md |
 | 컨텍스트주입 | prompt-drift 방지 — 반복 지시를 커맨드로 (prompt-drift-prevention) | 15-avi-chawla.md |
 | 구현위임 | 실패 시 즉시 중단하는 절차 커맨드 (fail-fast-command-chain) | 16-taehojo-vibecoding.md |
 | 구현위임 | 역할 릴레이 파이프라인 (agent-relay-pipeline) | 16-taehojo-vibecoding.md |
@@ -115,7 +119,8 @@
 > large 케이스에만 해당 단계 풀세트를 적용.
 >
 > 해외 출처(01~08)는 C조사 Worker2 채굴. 채점·기각 근거는 `research/candidates.md`, 재현 가능한 일하는 방식은 `research/workstyle-overseas.md` 참조.
-> 신규 출처(09~15)는 병렬 4워커(Reddit·Threads/X·YouTube·블로그) 채굴 — 취합·채점 근거는 `research/scout-SUMMARY.md` 및 `research/scout-*.md`. 14·15는 경계선(상2), 기존 패턴 "갱신 트리거"로 좁혀 이식.
+> 신규 출처(09~15)는 병렬 4워커(Reddit·Threads/X·YouTube·블로그) 채굴 — 취합·채점 근거는 `research/scout-SUMMARY.md` 및 `research/scout-*.md`. 15는 경계선(상2), 기존 패턴 "갱신 트리거"로 좁혀 이식. **14는 2026-07-29 재추적으로 원문 확보 → 상3 승격(경계선 해제).**
+> **12·14 원문 재추적(2026-07-29):** 12는 `/watch`로 영상 자막+화면 프레임에서 `grill-me` SKILL.md 전문을 확보(상3→상4), 14는 본인 커밋 커맨드 파일 전문 + 2차 스레드 확보(상2→상3). 각각 신규 패턴 3개·1개 추가.
 > 3차 채굴(16~20, 2026-07-29)은 4워커 병렬(한국어권·해외신규·1차공식·미완소스재시도). 채점 근거는 `research/candidates.md` §③.
 > ⚠️ 충돌 주의: 19의 [[just-in-time-context]](참조만 주기)와 00의 [[paste-full-source]](통째 붙이기)는 표면상 반대다.
 > 실격조건·숨은 규격처럼 **누락이 치명적인 자료는 통째로**, 어디가 필요한지 모르는 **대량 코드베이스는 참조만** — 자료 성격으로 갈린다. 19 파일 상단 메모 참조.
