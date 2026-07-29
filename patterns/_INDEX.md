@@ -116,6 +116,14 @@
 | 스코핑 | 노력 예산을 부위별로 배분 (effort-budget-allocation) — 부위별 힘 배분 | 20-snowflow-brief.md |
 | 검증루프 | 못생긴 마일스톤에서 진행 금지 (milestone-visual-gate) | 20-snowflow-brief.md |
 | 검증기 | 테스트를 명시적으로 끄고 이유를 말한다 (tests-off-by-design) | 20-snowflow-brief.md |
+| 솔루션깎기 | 해법 사다리 — 첫 칸에서 멈춰라 (solution-cost-ladder) | 21-ponytail-lazy-senior.md |
+| 검증기 | 축소 지시에는 성역 목록을 붙인다 (minimize-with-a-sacred-list) | 21-ponytail-lazy-senior.md |
+| 컨텍스트주입 | 효율 지시의 적용 공정을 못박는다 (scope-the-directive-to-a-phase) | 21-ponytail-lazy-senior.md |
+| 구현위임 | 지름길에 천장과 승급 조건을 붙여 심는다 (shortcut-ceiling-marker) | 21-ponytail-lazy-senior.md |
+| 컨텍스트주입 | 인계 브리프에 '추측' 라벨 강제 (self-debrief-with-confidence-label) | 22-second-opinion-debug.md |
+| 컨텍스트주입 | 물려받은 결론을 불신하라 + 근거 (distrust-the-inherited-context) | 22-second-opinion-debug.md |
+| 검증루프 | 전제가 틀렸을 가설도 개수로 강제 (hypotheses-including-false-premises) | 22-second-opinion-debug.md |
+| 솔루션깎기 | 가능성×검증쉬움으로 다음 한 수 (cheapest-discriminating-test) | 22-second-opinion-debug.md |
 
 > small 케이스(단일 작업)에는 문제정의+검증방법+범위제한 3~4개만 골라 쓴다. 8단계 풀세트 금지.
 > large 케이스에만 해당 단계 풀세트를 적용.
@@ -123,6 +131,7 @@
 > 해외 출처(01~08)는 C조사 Worker2 채굴. 채점·기각 근거는 `research/candidates.md`, 재현 가능한 일하는 방식은 `research/workstyle-overseas.md` 참조.
 > 신규 출처(09~15)는 병렬 4워커(Reddit·Threads/X·YouTube·블로그) 채굴 — 취합·채점 근거는 `research/scout-SUMMARY.md` 및 `research/scout-*.md`. 15는 경계선(상2), 기존 패턴 "갱신 트리거"로 좁혀 이식. **14는 2026-07-29 재추적으로 원문 확보 → 상3 승격(경계선 해제).**
 > **12·14 원문 재추적(2026-07-29):** 12는 `/watch`로 영상 자막+화면 프레임에서 `grill-me` SKILL.md 전문을 확보(상3→상4), 14는 본인 커밋 커맨드 파일 전문 + 2차 스레드 확보(상2→상3). 각각 신규 패턴 3개·1개 추가.
+> 4차 채굴(21~22, 2026-07-30): r/ClaudeCode·r/ChatGPTCoding 브라우저 경로 채굴. r/aigamedev는 빈손(원문 공개 글 없음).
 > 3차 채굴(16~20, 2026-07-29)은 4워커 병렬(한국어권·해외신규·1차공식·미완소스재시도). 채점 근거는 `research/candidates.md` §③.
 > ⚠️ 충돌 주의: 19의 [[just-in-time-context]](참조만 주기)와 00의 [[paste-full-source]](통째 붙이기)는 표면상 반대다.
 > 실격조건·숨은 규격처럼 **누락이 치명적인 자료는 통째로**, 어디가 필요한지 모르는 **대량 코드베이스는 참조만** — 자료 성격으로 갈린다. 19 파일 상단 메모 참조.
