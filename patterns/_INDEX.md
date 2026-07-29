@@ -89,9 +89,33 @@
 | 검증루프 | 리뷰를 메모리로 되먹임 (review-to-memory) | 14-boris-cherny.md |
 | 구현위임 | 반복 명령을 precompute 커맨드로 (precompute-slash-command) | 14-boris-cherny.md |
 | 컨텍스트주입 | prompt-drift 방지 — 반복 지시를 커맨드로 (prompt-drift-prevention) | 15-avi-chawla.md |
+| 구현위임 | 실패 시 즉시 중단하는 절차 커맨드 (fail-fast-command-chain) | 16-taehojo-vibecoding.md |
+| 구현위임 | 역할 릴레이 파이프라인 (agent-relay-pipeline) | 16-taehojo-vibecoding.md |
+| 검증기 | 모호성 표현을 감사 대상으로 명문화 (ambiguity-audit-rules) | 16-taehojo-vibecoding.md |
+| 컨텍스트주입 | 갈래별 메모리 분기 (per-variant-memory-split) | 16-taehojo-vibecoding.md |
+| 컨텍스트주입 | 압박 시나리오로 규칙을 벼리기 (pressure-test-the-rule) | 17-jesse-vincent.md |
+| 검증기 | 실패를 눈으로 본 뒤에만 구현 (verify-red-first) | 17-jesse-vincent.md |
+| 검증루프 | 증거 없는 완료 선언 금지 (evidence-before-claim) | 17-jesse-vincent.md |
+| 구현위임 | 재시도 라운드 에스컬레이션·상한 (escalating-retry-rounds) | 17-jesse-vincent.md |
+| 검증기 | 판정은 이진으로, 척도 금지 (binary-verdict-not-scale) | 18-hamel-husain.md |
+| 검증기 | 비평 먼저, 판정 나중 (critique-before-verdict) | 18-hamel-husain.md |
+| 검증기 | 전문가 비평을 few-shot 재료로 승격 (expert-critique-as-fewshot) | 18-hamel-husain.md |
+| 검증기 | 판정기 자체를 검수한다 (judge-alignment-check) | 18-hamel-husain.md |
+| 컨텍스트주입 | 적정 고도의 지시문 (right-altitude-instructions) | 19-anthropic-engineering-agents.md |
+| 컨텍스트주입 | 내용 말고 참조를 줘라 (just-in-time-context) | 19-anthropic-engineering-agents.md |
+| 리서치위임 | 위임 예산을 숫자로 배정 (delegation-effort-budget) | 19-anthropic-engineering-agents.md |
+| 검증루프 | 검증 대장과 '테스트 손대기 금지' 조항 (verification-ledger-no-test-edits) | 19-anthropic-engineering-agents.md |
+| 컨텍스트주입 | 인계 요약은 재현율 먼저 (compaction-recall-first) | 19-anthropic-engineering-agents.md |
+| PRD | 스펙을 깰 권한 + 편차 1줄 로그 (spec-override-with-decision-log) | 20-snowflow-brief.md |
+| 스코핑 | 노력 예산을 부위별로 배분 (effort-budget-allocation) | 20-snowflow-brief.md |
+| 검증루프 | 못생긴 마일스톤에서 진행 금지 (milestone-visual-gate) | 20-snowflow-brief.md |
+| 검증기 | 테스트를 명시적으로 끄고 이유를 말한다 (tests-off-by-design) | 20-snowflow-brief.md |
 
 > small 케이스(단일 작업)에는 문제정의+검증방법+범위제한 3~4개만 골라 쓴다. 8단계 풀세트 금지.
 > large 케이스에만 해당 단계 풀세트를 적용.
 >
 > 해외 출처(01~08)는 C조사 Worker2 채굴. 채점·기각 근거는 `research/candidates.md`, 재현 가능한 일하는 방식은 `research/workstyle-overseas.md` 참조.
 > 신규 출처(09~15)는 병렬 4워커(Reddit·Threads/X·YouTube·블로그) 채굴 — 취합·채점 근거는 `research/scout-SUMMARY.md` 및 `research/scout-*.md`. 14·15는 경계선(상2), 기존 패턴 "갱신 트리거"로 좁혀 이식.
+> 3차 채굴(16~20, 2026-07-29)은 4워커 병렬(한국어권·해외신규·1차공식·미완소스재시도). 채점 근거는 `research/candidates.md` §③.
+> ⚠️ 충돌 주의: 19의 [[just-in-time-context]](참조만 주기)와 00의 [[paste-full-source]](통째 붙이기)는 표면상 반대다.
+> 실격조건·숨은 규격처럼 **누락이 치명적인 자료는 통째로**, 어디가 필요한지 모르는 **대량 코드베이스는 참조만** — 자료 성격으로 갈린다. 19 파일 상단 메모 참조.

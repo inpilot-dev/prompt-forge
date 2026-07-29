@@ -62,7 +62,7 @@ ln -sfn "$PWD/skills/forge-run"          ~/.claude/skills/forge-run
 forge 엔진은 5단계로 동작한다:
 
 1. **크기 판단** — small(단일 작업) / large(프로젝트급)
-2. **맥락 검사** — 필수 슬롯이 비었으면 최대 3개까지 역인터뷰. 3개 넘게 비면 질문 대신 빈칸 `[ ]` 프롬프트를 출력.
+2. **맥락 검사** — 필수 슬롯(small 2·large 3)이 비었으면 그 개수만큼 역인터뷰(최대 3). 질문해도 안 채워지면 빈칸 `[ ]` 프롬프트로 출력.
 3. **패턴 선택** — `patterns/_INDEX.md`를 읽어 이 요청에 맞는 패턴만 고른다.
 4. **변환 출력** — 변환된 프롬프트(코드블록) + 적용 패턴 목록(한 줄).
 5. **끝** — 실행하지 않는다. (forge-run은 여기서 멈추지 않고 실행)
@@ -94,7 +94,8 @@ prompt-forge/
 │  ├─ 00-silvally-alex.md          ← 기준선 (알렉스 16패턴 이식본)
 │  ├─ 01~08-*.md                   ← 해외 고수 1차 채굴 (Simon Willison … Thorsten Ball)
 │  ├─ 09~15-*.md                   ← 병렬 리서치 2차 채굴 (Indragie … Avi Chawla)
-│  └─ _INDEX.md                    ← | 단계 | 패턴 | 파일 | 역인덱스 (84패턴)
+│  ├─ 16~20-*.md                   ← 3차 채굴 (조태호·Jesse Vincent·Hamel Husain·Anthropic Eng·SNOWFLOW)
+│  └─ _INDEX.md                    ← | 단계 | 패턴 | 파일 | 역인덱스 (105패턴)
 ├─ research/
 │  ├─ RUBRIC.md                    ← 출처 입장자격 채점기 (상 2개↑만 입장)
 │  ├─ candidates.md                ← 조사 대상 후보 목록
@@ -118,7 +119,7 @@ prompt-forge/
 ## 진화 경로
 
 - **v1** — forge 엔진 + 알렉스 16패턴 + 조사 루브릭.
-- **v1.x** — 해외 고수 조사로 패턴 확장 (01~15, 총 84패턴. 엔진 무변경).
+- **v1.x** — 해외·국내 고수 조사로 패턴 확장 (01~20, 총 105패턴. 엔진 무변경).
 - **v2 (현재)** — 같은 `patterns/`를 공유하는 스킬 3종: 채점(prompt-rate-review) · 변환(prompt-forge) · 실행(forge-run).
 - **다음** — E 로그 리뷰어(최초 설계의 v2 항목. `logs/` 2주+ 누적 후 약점 축 자동 추출 → rubric 자기갱신).
 - **v3 (자리만)** — 플러그인화. 스킬 3종이 `patterns/` 하나를 공유하는 지금 구조가 그 직전 모양이다.
