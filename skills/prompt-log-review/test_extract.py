@@ -120,6 +120,55 @@ def test_trunc_boundary():
     assert lines[0] == "[1] " + "c" * 500
     assert lines[1] == "[2] " + "d" * 500 + " …[절단됨]"
 
+def test_bash_envelope_excluded():
+    """인라인 배시모드 봉투(<bash-input>)는 시스템 주입이라 제외되어야 한다."""
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
+                                     encoding="utf-8") as f:
+        f.write(json.dumps(_rec("<bash-input>ls -la</bash-input>"), ensure_ascii=False) + "\n")
+        f.write(json.dumps(_rec("정상 프롬프트는 살아있어야 한다"), ensure_ascii=False) + "\n")
+        path = f.name
+    out = run_extract(path)
+    os.unlink(path)
+    assert "<bash-input>" not in out
+    assert "정상 프롬프트는 살아있어야 한다" in out
+
+def test_interrupt_marker_excluded():
+    """Claude Code가 삽입하는 중단 마커(`<`로 시작하지 않음)는 제외되어야 한다."""
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
+                                     encoding="utf-8") as f:
+        f.write(json.dumps(_rec("[Request interrupted by user for tool use]"), ensure_ascii=False) + "\n")
+        path = f.name
+    out = run_extract(path)
+    os.unlink(path)
+    lines = [l for l in out.splitlines() if l.startswith("[")]
+    assert len(lines) == 0, lines
+
+def test_compaction_preamble_excluded():
+    """컨텍스트 자동압축 이어붙이기 서문(`<`로 시작하지 않음)은 제외되어야 한다."""
+    txt = ("This session is being continued from a previous conversation "
+           "that ran out of context. The summary" + " lorem ipsum" * 40)
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
+                                     encoding="utf-8") as f:
+        f.write(json.dumps(_rec(txt), ensure_ascii=False) + "\n")
+        path = f.name
+    out = run_extract(path)
+    os.unlink(path)
+    assert "This session is being continued" not in out
+
+def test_skip_prefix_mention_survives():
+    """SKIP_PREFIXES 문구를 중간에 언급만 하는 정상 프롬프트는 살아남아야 한다(접두 검사라 부분매치로 안 삼켜짐)."""
+    txt1 = "압축 서문 This session is being continued from a previous conversation 이게 왜 섞이는지 봐줘"
+    txt2 = "extract.py가 <bash-input> 봉투도 걸러야 하나?"
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
+                                     encoding="utf-8") as f:
+        f.write(json.dumps(_rec(txt1), ensure_ascii=False) + "\n")
+        f.write(json.dumps(_rec(txt2), ensure_ascii=False) + "\n")
+        path = f.name
+    out = run_extract(path)
+    os.unlink(path)
+    assert txt1 in out
+    assert txt2 in out
+
 if __name__ == "__main__":
     test_filters()
     test_truncation_length()
@@ -127,4 +176,8 @@ if __name__ == "__main__":
     test_non_object_json_line_tolerated()
     test_min_len_boundary()
     test_trunc_boundary()
+    test_bash_envelope_excluded()
+    test_interrupt_marker_excluded()
+    test_compaction_preamble_excluded()
+    test_skip_prefix_mention_survives()
     print("ok")

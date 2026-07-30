@@ -16,6 +16,8 @@ description: Use when the user runs `/prompt-log-review [세션]`, says "이 세
 ### 1. 세션 확보
 - 세션 미지정 → `python3 <이 스킬 폴더>/extract.py --list` 실행, 목록을 보여주고 고르게 한다.
 - 경로가 왔으면 바로 2로.
+- **워커 세션은 채점 대상이 아니다.** 목록에는 Orca 워커·서브에이전트가 디스패치된 세션도 섞인다(프로젝트명에 `orca-workspaces` 가 들어가거나, 추출 결과 첫 항목이 "You are working inside Orca…" / "너는 …서브에이전트다" 같은 디스패치 브리프인 경우).
+- 추출 직후 첫 1~2개 항목을 훑어 **사람이 쓴 프롬프트가 맞는지 확인**하고, 디스패치 브리프면 채점하지 말고 다른 세션을 고르라고 알려라.
 
 ### 2. 추출 (토큰 0)
 `python3 <이 스킬 폴더>/extract.py <세션 JSONL 경로>` 실행.

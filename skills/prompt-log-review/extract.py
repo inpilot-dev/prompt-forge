@@ -8,7 +8,12 @@
 """
 import argparse, glob, json, os, time
 
-SKIP_MARKERS = ("<command-name>", "<local-command-stdout>", "<task-notification>")
+SKIP_MARKERS = ("<command-name>", "<local-command-stdout>", "<task-notification>",
+                "<bash-input>", "<bash-stdout>")
+SKIP_PREFIXES = (
+    "[Request interrupted by user",
+    "This session is being continued from a previous conversation",
+)
 MIN_LEN = 10      # 미만 = 맞장구("ㅇㅇ 해") → 제외
 TRUNC = 500       # 초과분 절단
 WARN_COUNT = 40   # 초과 시 경고 → 스킬이 범위를 물어야 함
@@ -35,6 +40,8 @@ def user_texts(path):
             continue
         txt = txt.strip()
         if not txt or len(txt) < MIN_LEN:
+            continue
+        if txt.startswith(SKIP_PREFIXES):
             continue
         if txt.startswith("<") and any(m in txt for m in SKIP_MARKERS):
             continue
