@@ -39,6 +39,8 @@ skills/prompt-log-review/
   - 로컬 커맨드 출력(`<local-command-stdout>` 포함) 제외
   - 10자 미만 맞장구("ㅇㅇ 해", "그래용") 제외
   - 붙여넣기 위주 긴 메시지는 앞 500자 절단 + `[절단됨]` 표시
+  - (실데이터 검증 추가분) `isMeta`·`isSidechain` 레코드 제외, `<task-notification>` 제외,
+    연속 재전송 dedup(직전 메시지가 현재 메시지의 접두면 직전 것을 버림)
 - 프롬프트 40개 초과 시 경고 출력 → 스킬이 채점 전에 범위를 물어본다 (토큰 게이트).
 
 ### SKILL.md
