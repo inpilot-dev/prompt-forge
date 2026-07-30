@@ -171,6 +171,38 @@ def test_skip_prefix_mention_survives():
     assert txt1 in out
     assert txt2 in out
 
+def test_warn_count_threshold():
+    """WARN_COUNT 경계 고정: 40개는 경고 없음, 41개는 첫 줄이 ⚠️로 시작."""
+    def _build(n):
+        with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
+                                         encoding="utf-8") as f:
+            for i in range(n):
+                f.write(json.dumps(_rec(f"프롬프트 채우기용 열자이상 텍스트 {i}"),
+                                    ensure_ascii=False) + "\n")
+            return f.name
+    path40 = _build(40)
+    out40 = run_extract(path40)
+    os.unlink(path40)
+    assert not out40.splitlines()[0].startswith("⚠️"), out40.splitlines()[0]
+
+    path41 = _build(41)
+    out41 = run_extract(path41)
+    os.unlink(path41)
+    assert out41.splitlines()[0].startswith("⚠️"), out41.splitlines()[0]
+
+def test_newline_flattened():
+    """본문 중간 개행이 출력에서 ' ⏎ '로 평탄화된다(SKILL.md는 한 항목=한 줄을 전제)."""
+    txt = "여러 줄로 붙여넣은 텍스트\n두 번째 줄\n세 번째 줄"
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
+                                     encoding="utf-8") as f:
+        f.write(json.dumps(_rec(txt), ensure_ascii=False) + "\n")
+        path = f.name
+    out = run_extract(path)
+    os.unlink(path)
+    lines = [l for l in out.splitlines() if l.startswith("[")]
+    assert len(lines) == 1, lines
+    assert lines[0] == "[1] 여러 줄로 붙여넣은 텍스트 ⏎ 두 번째 줄 ⏎ 세 번째 줄"
+
 if __name__ == "__main__":
     test_filters()
     test_truncation_length()
@@ -182,4 +214,6 @@ if __name__ == "__main__":
     test_interrupt_marker_excluded()
     test_compaction_preamble_excluded()
     test_skip_prefix_mention_survives()
+    test_warn_count_threshold()
+    test_newline_flattened()
     print("ok")
