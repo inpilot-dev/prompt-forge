@@ -6,7 +6,7 @@
   extract.py <JSONL 경로>    user 프롬프트를 [번호] 목록으로 출력
 필터는 전부 코드다 — LLM 판단 없음. 토큰 0.
 """
-import argparse, glob, json, os, sys, time
+import argparse, glob, json, os, time
 
 SKIP_MARKERS = ("<command-name>", "<local-command-stdout>", "<task-notification>")
 MIN_LEN = 10      # 미만 = 맞장구("ㅇㅇ 해") → 제외
@@ -21,6 +21,8 @@ def user_texts(path):
             o = json.loads(line)
         except json.JSONDecodeError:
             continue
+        if not isinstance(o, dict):
+            continue
         if o.get("type") != "user" or o.get("isSidechain") or o.get("isMeta"):
             continue
         c = o.get("message", {}).get("content")
@@ -34,7 +36,7 @@ def user_texts(path):
         txt = txt.strip()
         if not txt or len(txt) < MIN_LEN:
             continue
-        if any(m in txt for m in SKIP_MARKERS):
+        if txt.startswith("<") and any(m in txt for m in SKIP_MARKERS):
             continue
         out.append(txt)
     # 연속 재전송 dedup: 직전 항목이 현재 항목의 접두면 직전 것을 버린다

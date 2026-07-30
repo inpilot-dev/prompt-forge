@@ -68,9 +68,63 @@ def test_truncation_length():
     out = run_extract(path)
     os.unlink(path)
     body = [l for l in out.splitlines() if l.startswith("[1]")][0]
-    assert len(body) < 600  # 500자 절단 + 접두/표시 여유
+    assert len(body) == len("[1] ") + 500 + len(" …[절단됨]")
+
+def test_tag_mention_survives():
+    """태그를 언급만 하는 정상 프롬프트는 SKIP_MARKERS 부분매치로 삼켜지면 안 된다."""
+    txt = "extract.py에서 <command-name> 태그를 어떻게 걸러내는지 설명해줘"
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
+                                     encoding="utf-8") as f:
+        f.write(json.dumps(_rec(txt), ensure_ascii=False) + "\n")
+        path = f.name
+    out = run_extract(path)
+    os.unlink(path)
+    assert txt in out
+
+def test_non_object_json_line_tolerated():
+    """null 같은 비객체 유효 JSON 라인이 섞여도 프로세스가 죽지 않고 나머지는 살아남는다."""
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
+                                     encoding="utf-8") as f:
+        f.write(json.dumps(_rec("정상 프롬프트 하나는 살아있어야 한다"), ensure_ascii=False) + "\n")
+        f.write("null\n")
+        f.write(json.dumps(_rec("두 번째 정상 프롬프트도 살아있어야 한다"), ensure_ascii=False) + "\n")
+        path = f.name
+    out = run_extract(path)  # run_extract가 returncode 0을 내부에서 assert
+    os.unlink(path)
+    assert "정상 프롬프트 하나는 살아있어야 한다" in out
+    assert "두 번째 정상 프롬프트도 살아있어야 한다" in out
+
+def test_min_len_boundary():
+    """정확히 9자는 제외, 정확히 10자는 포함."""
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
+                                     encoding="utf-8") as f:
+        f.write(json.dumps(_rec("a" * 9), ensure_ascii=False) + "\n")
+        f.write(json.dumps(_rec("b" * 10), ensure_ascii=False) + "\n")
+        path = f.name
+    out = run_extract(path)
+    os.unlink(path)
+    lines = [l for l in out.splitlines() if l.startswith("[")]
+    assert len(lines) == 1, lines
+    assert lines[0] == "[1] " + "b" * 10
+
+def test_trunc_boundary():
+    """정확히 500자는 비절단, 501자는 절단."""
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
+                                     encoding="utf-8") as f:
+        f.write(json.dumps(_rec("c" * 500), ensure_ascii=False) + "\n")
+        f.write(json.dumps(_rec("d" * 501), ensure_ascii=False) + "\n")
+        path = f.name
+    out = run_extract(path)
+    os.unlink(path)
+    lines = [l for l in out.splitlines() if l.startswith("[")]
+    assert lines[0] == "[1] " + "c" * 500
+    assert lines[1] == "[2] " + "d" * 500 + " …[절단됨]"
 
 if __name__ == "__main__":
     test_filters()
     test_truncation_length()
+    test_tag_mention_survives()
+    test_non_object_json_line_tolerated()
+    test_min_len_boundary()
+    test_trunc_boundary()
     print("ok")
