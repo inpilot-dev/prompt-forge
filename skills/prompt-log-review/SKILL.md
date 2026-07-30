@@ -47,6 +47,7 @@ description: Use when the user runs `/prompt-log-review [세션]`, says "이 세
 X = 그 축의 최빈 등급(상/중/하).
 
 ## 자가 점검 (완료 전)
+- [ ] 사람이 대화한 세션이 맞다 — 워커·서브에이전트 디스패치 세션을 채점하지 않았다
 - [ ] JSONL 원문을 직접 Read하지 않았다 (extract.py 출력만 썼다)
 - [ ] 40개 초과 경고 시 범위를 먼저 물었다
 - [ ] 최약축이 정확히 1개다

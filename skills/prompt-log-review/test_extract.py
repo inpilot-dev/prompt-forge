@@ -121,15 +121,17 @@ def test_trunc_boundary():
     assert lines[1] == "[2] " + "d" * 500 + " …[절단됨]"
 
 def test_bash_envelope_excluded():
-    """인라인 배시모드 봉투(<bash-input>)는 시스템 주입이라 제외되어야 한다."""
+    """인라인 배시모드 봉투(<bash-input>/<bash-stdout>)는 시스템 주입이라 제외되어야 한다."""
     with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
                                      encoding="utf-8") as f:
         f.write(json.dumps(_rec("<bash-input>ls -la</bash-input>"), ensure_ascii=False) + "\n")
+        f.write(json.dumps(_rec("<bash-stdout>output</bash-stdout>"), ensure_ascii=False) + "\n")
         f.write(json.dumps(_rec("정상 프롬프트는 살아있어야 한다"), ensure_ascii=False) + "\n")
         path = f.name
     out = run_extract(path)
     os.unlink(path)
     assert "<bash-input>" not in out
+    assert "<bash-stdout>" not in out
     assert "정상 프롬프트는 살아있어야 한다" in out
 
 def test_interrupt_marker_excluded():

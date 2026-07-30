@@ -41,6 +41,9 @@ skills/prompt-log-review/
   - 붙여넣기 위주 긴 메시지는 앞 500자 절단 + `[절단됨]` 표시
   - (실데이터 검증 추가분) `isMeta`·`isSidechain` 레코드 제외, `<task-notification>` 제외,
     연속 재전송 dedup(직전 메시지가 현재 메시지의 접두면 직전 것을 버림)
+  - (실세션 10개 검증 추가분) 배시 봉투(`<bash-input>`/`<bash-stdout>`) 제외, 그리고 접두 일치로
+    중단 마커(`[Request interrupted by user…`)·컨텍스트 압축 서문(`This session is being continued…`) 제외.
+    접두 일치라 그 문구를 본문 중간에 *언급만* 하는 정상 프롬프트는 살아남는다.
 - 프롬프트 40개 초과 시 경고 출력 → 스킬이 채점 전에 범위를 물어본다 (토큰 게이트).
 
 ### SKILL.md
