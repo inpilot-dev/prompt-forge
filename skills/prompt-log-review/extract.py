@@ -14,7 +14,7 @@ SKIP_PREFIXES = (
     "[Request interrupted by user",
     "This session is being continued from a previous conversation",
 )
-MIN_LEN = 10      # 미만 = 맞장구("ㅇㅇ 해") → 제외
+MIN_LEN = 5       # 미만 = 맞장구("그래용" 3자, "ㅇㅇ 해" 4자) → 제외. 6자부터는 "다시 진행해" 같은 진짜 명령이라 살린다
 TRUNC = 500       # 초과분 절단
 WARN_COUNT = 40   # 초과 시 경고 → 스킬이 범위를 물어야 함
 

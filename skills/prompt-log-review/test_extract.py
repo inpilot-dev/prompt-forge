@@ -10,7 +10,7 @@ def _rec(txt, **kw):
 
 RECORDS = [
     _rec("백테스트 결과 분석해줘. 데이터는 위에 붙였어."),                # 1: 정상 → 남음
-    _rec("ㅇㅇ 해"),                                                      # 2: 10자 미만 → 제외
+    _rec("ㅇㅇ 해"),                                                      # 2: 5자 미만 → 제외
     {"type": "assistant", "message": {"content": "답변"}},                 # 3: user 아님 → 제외
     _rec("<command-message>forge-run</command-message>\n<command-name>/forge-run</command-name> 긴 커맨드 본문"),  # 4: 커맨드 → 제외
     _rec("<local-command-stdout>Set model to Fable</local-command-stdout> 그리고 부가 텍스트"),  # 5: stdout → 제외
@@ -95,17 +95,34 @@ def test_non_object_json_line_tolerated():
     assert "두 번째 정상 프롬프트도 살아있어야 한다" in out
 
 def test_min_len_boundary():
-    """정확히 9자는 제외, 정확히 10자는 포함."""
+    """정확히 4자는 제외, 정확히 5자는 포함."""
     with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
                                      encoding="utf-8") as f:
-        f.write(json.dumps(_rec("a" * 9), ensure_ascii=False) + "\n")
-        f.write(json.dumps(_rec("b" * 10), ensure_ascii=False) + "\n")
+        f.write(json.dumps(_rec("a" * 4), ensure_ascii=False) + "\n")
+        f.write(json.dumps(_rec("b" * 5), ensure_ascii=False) + "\n")
         path = f.name
     out = run_extract(path)
     os.unlink(path)
     lines = [l for l in out.splitlines() if l.startswith("[")]
     assert len(lines) == 1, lines
-    assert lines[0] == "[1] " + "b" * 10
+    assert lines[0] == "[1] " + "b" * 5
+
+def test_short_korean_command_survives():
+    """MIN_LEN 5 하향 회귀 방지: 6자 진짜 명령("다시 진행해")은 남고,
+    3~4자 맞장구("그래용"/"ㅇㅇ 해")는 여전히 빠진다."""
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
+                                     encoding="utf-8") as f:
+        f.write(json.dumps(_rec("다시 진행해"), ensure_ascii=False) + "\n")  # 6자 → 남음
+        f.write(json.dumps(_rec("그래용"), ensure_ascii=False) + "\n")       # 3자 → 제외
+        f.write(json.dumps(_rec("ㅇㅇ 해"), ensure_ascii=False) + "\n")      # 4자 → 제외
+        path = f.name
+    out = run_extract(path)
+    os.unlink(path)
+    lines = [l for l in out.splitlines() if l.startswith("[")]
+    assert len(lines) == 1, lines
+    assert lines[0] == "[1] 다시 진행해"
+    assert "그래용" not in out
+    assert "ㅇㅇ 해" not in out
 
 def test_trunc_boundary():
     """정확히 500자는 비절단, 501자는 절단."""
@@ -209,6 +226,7 @@ if __name__ == "__main__":
     test_tag_mention_survives()
     test_non_object_json_line_tolerated()
     test_min_len_boundary()
+    test_short_korean_command_survives()
     test_trunc_boundary()
     test_bash_envelope_excluded()
     test_interrupt_marker_excluded()
