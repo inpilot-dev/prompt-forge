@@ -14,7 +14,7 @@
 - **JSONL 원문을 LLM이 직접 Read 금지** — 반드시 extract.py 출력만 채점 대상(토큰 폭탄 방지).
 - **4축 정의 복제 금지** — `skills/prompt-rate-review/SKILL.md`를 읽어 재사용. rate-review·forge·forge-run 본체 불변.
 - **프롬프트당 서브에이전트 금지** — 일괄 한 패스 채점.
-- 필터 상수(스펙 확정값): 10자 미만 맞장구 제외 / 500자 초과 절단+`[절단됨]` / 40개 초과 시 경고.
+- 필터 상수(스펙 확정값): 5자 미만 맞장구 제외(2026-07-31 하향, 실측 근거는 설계 스펙 참조) / 500자 초과 절단+`[절단됨]` / 40개 초과 시 경고.
 - **스펙 추가분(실데이터 검증에서 발견, 스펙에 한 줄 반영할 것):** `isMeta`·`isSidechain` 항목 제외, `<task-notification>` 제외, 연속 재전송 dedup(앞 메시지가 뒤 메시지의 접두면 앞 것을 버림).
 - 전부 로컬 처리. 외부 전송 없음.
 - 배포: `~/.claude/skills/prompt-log-review` → repo `skills/prompt-log-review` 심링크.

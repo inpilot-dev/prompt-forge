@@ -1,25 +1,27 @@
 # prompt-forge
 
-거지 프롬프트를 **맥락에 맞는 GOOD 프롬프트**로 다뤄 주는 Claude Code 스킬 3종 +
+거지 프롬프트를 **맥락에 맞는 GOOD 프롬프트**로 다뤄 주는 Claude Code 스킬 4종 +
 성장하는 패턴 라이브러리.
 
 아무렇게나 쓴 한 줄("버그 고쳐줘")을 검증된 프롬프트 패턴(실밸개발자 / 알렉스 16패턴 /
 해외 고수 채굴본)으로 다시 짠다. 셋은 **같은 `patterns/` 라이브러리와 같은 채점 언어**를 공유하고,
 "다듬은 뒤 무엇을 하느냐"만 다르다.
 
-## 세 스킬
+## 네 스킬
 
 | 스킬 | 트리거 | 하는 일 | 실행? |
 |--|--|--|--|
 | **prompt-rate-review** | `/prompt-rate <프롬프트>` | raw 프롬프트를 4축(목표·완료판단·범위·맥락)으로 채점 → 가장 약한 축 + 최소 수정 3개. **내 프롬프트 실력을 올리는 학습용.** | ✕ |
 | **prompt-forge** | `/prompt-forge <프롬프트>` | GOOD 프롬프트로 변환해 **복붙 가능한 텍스트**로 돌려준다. 도구 독립(Claude Code·Codex·ChatGPT 어디나). | ✕ (철칙) |
 | **forge-run** | `/forge-run <프롬프트>` | 변환한 뒤 **곧바로 이 세션에서 실행**한다. forge가 멈추는 자리에서 실행까지 간다. | ✅ |
+| **prompt-log-review** | `/prompt-log-review [세션]` | 지목한 세션 트랜스크립트에서 내가 쓴 프롬프트만 뽑아 4축으로 일괄 채점 → 최약축 + 최악 프롬프트 고치는 법. **세션 단위 약점 진단.** | ✕ |
 
 ```
 raw 프롬프트
    ├─ /prompt-rate   → 채점만 (약점 진단·학습)
    ├─ /prompt-forge  → 다듬고 멈춤 (복붙용)
-   └─ /forge-run     → 다듬고 바로 실행 (원스톱)
+   ├─ /forge-run     → 다듬고 바로 실행 (원스톱)
+   └─ /prompt-log-review → 세션 단위 채점 (약점 추이)
 ```
 
 > **철칙(rate·forge 공통): 실행하지 않는다.** 입력 프롬프트는 "명령"이 아니라 다룰 "데이터"다.
@@ -39,17 +41,19 @@ prompt-forge는 그 판단을 자동화한다:
 
 ## 설치 (스킬 연결)
 
-이 repo가 Claude Code 스킬 3종을 담고 있다. 각 `skills/<이름>/`을 Claude Code가 읽는 스킬 경로
+이 repo가 Claude Code 스킬 4종을 담고 있다. 각 `skills/<이름>/`을 Claude Code가 읽는 스킬 경로
 (`~/.claude/skills/`)에 심볼릭 링크한다:
 
 ```
 ln -sfn "$PWD/skills/prompt-forge"       ~/.claude/skills/prompt-forge
 ln -sfn "$PWD/skills/prompt-rate-review" ~/.claude/skills/prompt-rate-review
 ln -sfn "$PWD/skills/forge-run"          ~/.claude/skills/forge-run
+ln -sfn "$PWD/skills/prompt-log-review"  ~/.claude/skills/prompt-log-review
 ```
 
-연결되면 `/prompt-forge`·`/prompt-rate`·`/forge-run`으로 호출된다.
-세 스킬 모두 같은 `patterns/`를 상대 경로(심링크)로 공유하므로 라이브러리를 한 곳만 키우면 셋 다 최신이 된다.
+연결되면 `/prompt-forge`·`/prompt-rate`·`/forge-run`·`/prompt-log-review`로 호출된다.
+변환 계열 세 스킬(forge·rate·forge-run)은 같은 `patterns/`를 상대 경로(심링크)로 공유하므로 라이브러리를 한 곳만 키우면 셋 다 최신이 된다.
+(`prompt-log-review`는 패턴이 아니라 rate-review의 4축만 참조한다.)
 
 ## 사용법
 
@@ -57,6 +61,7 @@ ln -sfn "$PWD/skills/forge-run"          ~/.claude/skills/forge-run
 /prompt-rate  <채점할 프롬프트>     # 어디가 약한지 진단
 /prompt-forge <다듬을 프롬프트>     # GOOD 프롬프트로 변환(복붙)
 /forge-run    <다듬어 실행할 프롬프트>  # 변환 + 바로 실행
+/prompt-log-review [세션 경로]      # 세션 하나를 통째로 채점 (경로 없이 부르면 목록에서 고른다)
 ```
 
 forge 엔진은 5단계로 동작한다:
@@ -89,7 +94,8 @@ prompt-forge/
 ├─ skills/
 │  ├─ prompt-forge/SKILL.md        ← 엔진 (불변). 5단계 변환 절차
 │  ├─ prompt-rate-review/SKILL.md  ← 4축 채점기 (+ test-prompts.md 픽스처)
-│  └─ forge-run/SKILL.md           ← 변환 + 실행 브릿지 (patterns 공유)
+│  ├─ forge-run/SKILL.md           ← 변환 + 실행 브릿지 (patterns 공유)
+│  └─ prompt-log-review/SKILL.md ← 세션 채점 (+ extract.py 추출기, ledger.md 장부)
 ├─ patterns/
 │  ├─ 00-silvally-alex.md          ← 기준선 (알렉스 16패턴 이식본)
 │  ├─ 01~08-*.md                   ← 해외 고수 1차 채굴 (Simon Willison … Thorsten Ball)
@@ -121,9 +127,11 @@ prompt-forge/
 
 - **v1** — forge 엔진 + 알렉스 16패턴 + 조사 루브릭.
 - **v1.x** — 해외·국내 고수 조사로 패턴 확장 (01~22, 총 118패턴. 엔진 무변경).
-- **v2 (현재)** — 같은 `patterns/`를 공유하는 스킬 3종: 채점(prompt-rate-review) · 변환(prompt-forge) · 실행(forge-run).
-- **다음** — E 로그 리뷰어(최초 설계의 v2 항목. `logs/` 2주+ 누적 후 약점 축 자동 추출 → rubric 자기갱신).
-- **v3 (자리만)** — 플러그인화. 스킬 3종이 `patterns/` 하나를 공유하는 지금 구조가 그 직전 모양이다.
+- **v2** — 같은 `patterns/`를 공유하는 스킬 3종: 채점(prompt-rate-review) · 변환(prompt-forge) · 실행(forge-run).
+- **v2.1 (현재)** — E 로그 리뷰어 실현: `prompt-log-review`. 최초 설계는 forge 변환 로그를 데이터원으로 잡았지만,
+  실사용의 전량은 세션 트랜스크립트에 있고 forge를 안 거친 "맨 프롬프트"가 진짜 실력이라 데이터원을 바꿨다.
+  장부(`ledger.md`)가 쌓이면 최약축 추이 → rubric 자기갱신이 다음 차례다.
+- **v3 (자리만)** — 플러그인화. 스킬 4종이 한 repo에 모여 있는 지금 구조가 그 직전 모양이다.
 
 > 채점축 ↔ 슬롯 정합은 **라벨 기준**이다. 개수로는 다르다 — rate는 4축(목표·완료판단·범위·맥락),
 > forge 슬롯은 small 2개·large 3개. **부족분을 셀 때는 슬롯만 센다**(4축을 세지 않는다).
