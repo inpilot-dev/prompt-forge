@@ -6,10 +6,13 @@
   extract.py <JSONL 경로>    user 프롬프트를 [번호] 목록으로 출력
 필터는 전부 코드다 — LLM 판단 없음. 토큰 0.
 """
-import argparse, glob, json, os, time
+import argparse, glob, json, os, re, time
 
 SKIP_MARKERS = ("<command-name>", "<local-command-stdout>", "<task-notification>",
                 "<bash-input>", "<bash-stdout>")
+# 봉투 없이 본문만 남는 맨몸 슬래시 커맨드("/compact"). 인자가 붙으면(공백 포함) 진짜 요청이라 살린다.
+# 경로("/Users/…")는 두 번째 슬래시 때문에 매치되지 않는다.
+BARE_SLASH_CMD = re.compile(r"^/[A-Za-z][\w-]*$")
 SKIP_PREFIXES = (
     "[Request interrupted by user",
     "This session is being continued from a previous conversation",
@@ -44,6 +47,8 @@ def user_texts(path):
         if txt.startswith(SKIP_PREFIXES):
             continue
         if txt.startswith("<") and any(m in txt for m in SKIP_MARKERS):
+            continue
+        if BARE_SLASH_CMD.match(txt):
             continue
         out.append(txt)
     # 연속 재전송 dedup: 직전 항목이 현재 항목의 접두면 직전 것을 버린다

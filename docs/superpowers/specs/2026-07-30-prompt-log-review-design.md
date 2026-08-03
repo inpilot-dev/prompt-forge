@@ -44,6 +44,8 @@ skills/prompt-log-review/
   - (실세션 10개 검증 추가분) 배시 봉투(`<bash-input>`/`<bash-stdout>`) 제외, 그리고 접두 일치로
     중단 마커(`[Request interrupted by user…`)·컨텍스트 압축 서문(`This session is being continued…`) 제외.
     접두 일치라 그 문구를 본문 중간에 *언급만* 하는 정상 프롬프트는 살아남는다.
+  - (첫 실사용 채점에서 발견) 맨몸 슬래시 커맨드(`/compact`처럼 봉투 없이 본문만 남는 것) 제외 —
+    `^/[A-Za-z][\w-]*$` 전체 일치일 때만이라, 인자가 붙은 호출이나 경로(`/Users/…`)는 살아남는다.
 - 프롬프트 40개 초과 시 경고 출력 → 스킬이 채점 전에 범위를 물어본다 (토큰 게이트).
 
 ### SKILL.md

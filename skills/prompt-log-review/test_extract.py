@@ -220,9 +220,30 @@ def test_newline_flattened():
     assert len(lines) == 1, lines
     assert lines[0] == "[1] 여러 줄로 붙여넣은 텍스트 ⏎ 두 번째 줄 ⏎ 세 번째 줄"
 
+def test_bare_slash_command_excluded():
+    """맨몸 슬래시 커맨드(/compact)는 봉투 없이 본문만 남아 SKIP_MARKERS를 통과한다 —
+    실세션 채점에서 발견된 갭. 인자가 붙거나 경로면 진짜 요청이라 살아남아야 한다."""
+    recs = [
+        _rec("/compact"),                              # 맨몸 커맨드 → 제외
+        _rec("/prompt-forge 이 프롬프트 다듬어줘"),     # 인자 있음 → 생존
+        _rec("/Users/seungbinmin/dev/foo.md 읽어줘"),   # 경로 → 생존
+    ]
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
+                                     encoding="utf-8") as f:
+        for r in recs:
+            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+        path = f.name
+    out = run_extract(path)
+    os.unlink(path)
+    assert "/compact" not in out
+    assert "이 프롬프트 다듬어줘" in out
+    assert "foo.md 읽어줘" in out
+
+
 if __name__ == "__main__":
     test_filters()
     test_truncation_length()
+    test_bare_slash_command_excluded()
     test_tag_mention_survives()
     test_non_object_json_line_tolerated()
     test_min_len_boundary()
