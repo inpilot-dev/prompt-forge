@@ -240,8 +240,56 @@ def test_bare_slash_command_excluded():
     assert "foo.md 읽어줘" in out
 
 
+def test_orchestration_injections_excluded():
+    """Orca heartbeat·teammate 주입은 `<`로 시작하지 않아 SKIP_MARKERS를 통과한다 —
+    첫 주간 자동 채점(ledger-audit 세션)에서 발견된 갭. 언급만 하는 프롬프트는 살아야 한다."""
+    recs = [
+        _rec("--- Orchestration Messages (2) ---\n──── From: TERM_ABC (heartbeat) ────\nSubagent status"),
+        _rec('Another Claude session sent a message:\n<teammate-message teammate_id="judge-r1">\n{"type":"idle_notification"}'),
+        _rec("Orchestration Messages 가 왜 채점 목록에 섞이는지 봐줘"),   # 언급 → 생존
+    ]
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False,
+                                     encoding="utf-8") as f:
+        for r in recs:
+            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+        path = f.name
+    out = run_extract(path)
+    os.unlink(path)
+    lines = [l for l in out.splitlines() if l.startswith("[")]
+    assert len(lines) == 1, lines
+    assert "왜 채점 목록에 섞이는지" in out
+    assert "heartbeat" not in out
+    assert "idle_notification" not in out
+
+
+def test_pick_best():
+    """--pick 선정 로직: 프롬프트 최다 세션이 이기고, 워커 경로·오래된 파일은 제외."""
+    sys.path.insert(0, HERE)
+    import extract, time as _t
+    d = tempfile.mkdtemp()
+    def _mk(name, n_prompts, old=False):
+        p = os.path.join(d, name)
+        with open(p, "w", encoding="utf-8") as f:
+            for i in range(n_prompts):
+                f.write(json.dumps(_rec(f"진짜 사람 프롬프트 {i}번입니다"), ensure_ascii=False) + "\n")
+        if old:
+            _t_old = _t.time() - 8 * 86400
+            os.utime(p, (_t_old, _t_old))
+        return p
+    small = _mk("small.jsonl", 2)
+    big = _mk("big.jsonl", 5)
+    worker = _mk("orca-workspaces-w1.jsonl", 9)   # 최다지만 워커 경로 → 제외
+    stale = _mk("stale.jsonl", 7, old=True)        # 최다지만 7일 밖 → 제외
+    best, n = extract.pick_best([small, big, worker, stale], _t.time() - 7 * 86400)
+    assert best == big and n == 5, (best, n)
+    best_none, n0 = extract.pick_best([worker, stale], _t.time() - 7 * 86400)
+    assert best_none is None and n0 == 0
+
+
 if __name__ == "__main__":
     test_filters()
+    test_pick_best()
+    test_orchestration_injections_excluded()
     test_truncation_length()
     test_bare_slash_command_excluded()
     test_tag_mention_survives()

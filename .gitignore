@@ -1,2 +1,4 @@
 skills/prompt-forge/logs/
 skills/prompt-log-review/ledger.md
+__pycache__/
+skills/prompt-log-review/weekly-run.log

@@ -59,3 +59,36 @@ N은 실제로 채점한 개수다(범위를 좁혔으면 좁힌 개수).
 - [ ] rate-review·forge·forge-run 파일을 건드리지 않았다
 - [ ] 4축 정의를 이 파일에 복제하지 않고 rate-review SKILL.md를 읽어 썼다
 - [ ] 프롬프트당 서브에이전트를 띄우지 않고 한 패스로 채점했다
+
+## 주간 자동 실행 (ledger 축적)
+
+수동 습관은 5주 실측(ledger 1줄)으로 반증됐다 — 장부는 자동으로 쌓는다.
+`weekly-review.sh`가 `extract.py --pick`(지난 7일 사람 프롬프트 최다 세션, 워커 경로 제외)으로
+대상을 골라 headless `claude -p`로 이 스킬을 돌린다. 40개 게이트·워커 판정의 답은
+프롬프트에 선지급되어 있다(headless라 물을 수 없음). 실행 기록: `weekly-run.log`(gitignore).
+
+설치(1회, launchd — cron과 달리 잠자다 깨어나면 밀린 잡을 실행한다):
+
+```sh
+cat > ~/Library/LaunchAgents/com.prompt-forge.weekly-review.plist <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.prompt-forge.weekly-review</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>$HOME/dev/prompt-forge/skills/prompt-log-review/weekly-review.sh</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>10</integer><key>Minute</key><integer>17</integer></dict>
+  <key>StandardOutPath</key><string>$HOME/dev/prompt-forge/skills/prompt-log-review/weekly-run.log</string>
+  <key>StandardErrorPath</key><string>$HOME/dev/prompt-forge/skills/prompt-log-review/weekly-run.log</string>
+</dict>
+</plist>
+EOF
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.prompt-forge.weekly-review.plist
+```
+
+해제: `launchctl bootout gui/$(id -u)/com.prompt-forge.weekly-review`

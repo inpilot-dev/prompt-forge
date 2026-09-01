@@ -38,6 +38,7 @@ prompt-forge는 그 판단을 자동화한다:
 - **엔진은 불변, 재료만 성장** — 새 고수를 조사하면 `patterns/`에 파일이 늘 뿐, 엔진(SKILL.md)은 그대로다.
 - **적용 패턴 항상 명시** — 변환 결과에 "어떤 패턴을 왜 썼는지"를 한 줄로 남겨 학습 루프를 만든다.
 - **채점축 ↔ forge 슬롯 1:1 정합** — rate의 4축이 forge의 슬롯과 같은 언어라, `rate → forge → 다시 rate`로 점수가 오르는지 교차검증된다.
+  1회 실측(2026-09-01, 픽스처 5케이스): 하락 0·상승 15축 — **forge는 하를 없애고, 빈칸 충전이 상을 만든다** ([기록](docs/2026-09-01-rate-forge-rate-validation.md)).
 
 ## 설치 (스킬 연결)
 
@@ -63,6 +64,9 @@ ln -sfn "$PWD/skills/prompt-log-review"  ~/.claude/skills/prompt-log-review
 /forge-run    <다듬어 실행할 프롬프트>  # 변환 + 바로 실행
 /prompt-log-review [세션 경로]      # 세션 하나를 통째로 채점 (경로 없이 부르면 목록에서 고른다)
 ```
+
+`prompt-log-review`는 주 1회(월 10:17) launchd로도 자동 실행된다 — 설치·해제는
+[`skills/prompt-log-review/SKILL.md`](skills/prompt-log-review/SKILL.md)의 "주간 자동 실행" 참조.
 
 forge 엔진은 5단계로 동작한다:
 
@@ -131,6 +135,7 @@ prompt-forge/
 - **v2.1 (현재)** — E 로그 리뷰어 실현: `prompt-log-review`. 최초 설계는 forge 변환 로그를 데이터원으로 잡았지만,
   실사용의 전량은 세션 트랜스크립트에 있고 forge를 안 거친 "맨 프롬프트"가 진짜 실력이라 데이터원을 바꿨다.
   장부(`ledger.md`)가 쌓이면 최약축 추이 → rubric 자기갱신이 다음 차례다.
+  장부 축적은 주간 자동 리뷰(launchd 월 10:17 → `weekly-review.sh`, 지난 7일 최다 세션 자동 선정)가 맡는다 — 수동 습관은 5주 실측(ledger 1줄)으로 반증됐다.
 - **v3 (자리만)** — 플러그인화. 스킬 4종이 한 repo에 모여 있는 지금 구조가 그 직전 모양이다.
 
 > 채점축 ↔ 슬롯 정합은 **라벨 기준**이다. 개수로는 다르다 — rate는 4축(목표·완료판단·범위·맥락),

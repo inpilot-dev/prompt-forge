@@ -6,7 +6,7 @@
   extract.py <JSONL 경로>    user 프롬프트를 [번호] 목록으로 출력
 필터는 전부 코드다 — LLM 판단 없음. 토큰 0.
 """
-import argparse, glob, json, os, re, time
+import argparse, glob, json, os, re, sys, time
 
 SKIP_MARKERS = ("<command-name>", "<local-command-stdout>", "<task-notification>",
                 "<bash-input>", "<bash-stdout>")
@@ -16,6 +16,9 @@ BARE_SLASH_CMD = re.compile(r"^/[A-Za-z][\w-]*$")
 SKIP_PREFIXES = (
     "[Request interrupted by user",
     "This session is being continued from a previous conversation",
+    # Orca/멀티세션 오케스트레이션 주입 — 사람 프롬프트 아님 (첫 주간 자동 채점에서 발견)
+    "--- Orchestration Messages",
+    "Another Claude session sent a message:",
 )
 MIN_LEN = 5       # 미만 = 맞장구("그래용" 3자, "ㅇㅇ 해" 4자) → 제외. 6자부터는 "다시 진행해" 같은 진짜 명령이라 살린다
 TRUNC = 500       # 초과분 절단
@@ -60,6 +63,27 @@ def user_texts(path):
     return deduped
 
 
+def pick_best(files, cutoff):
+    """cutoff 이후 수정된 세션 중 사람 프롬프트 최다 파일 1개 — 주간 자동 실행의 채점 대상 선정.
+    워커 세션(orca-workspaces)은 경로로 선제 제외한다(내용 기반 판정은 스킬 몫)."""
+    best, best_n = None, 0
+    for f in files:
+        if "orca-workspaces" in f or os.path.getmtime(f) < cutoff:
+            continue
+        n = len(user_texts(f))
+        if n > best_n:
+            best, best_n = f, n
+    return best, best_n
+
+
+def cmd_pick(days=7):
+    files = glob.glob(os.path.expanduser("~/.claude/projects/*/*.jsonl"))
+    best, n = pick_best(files, time.time() - days * 86400)
+    if best:
+        print(best)                                  # stdout = 경로만 (스크립트가 그대로 넘긴다)
+        print(f"프롬프트 {n}개", file=sys.stderr)
+
+
 def cmd_list(n=15):
     files = glob.glob(os.path.expanduser("~/.claude/projects/*/*.jsonl"))
     files.sort(key=os.path.getmtime, reverse=True)
@@ -73,7 +97,12 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("session", nargs="?", help="세션 JSONL 경로")
     ap.add_argument("--list", action="store_true", help="최근 세션 나열")
+    ap.add_argument("--pick", action="store_true",
+                    help="지난 7일 중 사람 프롬프트 최다 세션 경로 1개 출력 (주간 자동 실행용)")
     a = ap.parse_args()
+    if a.pick:
+        cmd_pick()
+        return
     if a.list or not a.session:
         cmd_list()
         return
