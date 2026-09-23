@@ -263,28 +263,37 @@ def test_orchestration_injections_excluded():
 
 
 def test_pick_best():
-    """--pick 선정 로직: 프롬프트 최다 세션이 이기고, 워커 경로·오래된 파일은 제외."""
+    """--pick 선정 로직: 창(cutoff) 안에 쓴 프롬프트 수로 센다. 누적이 많은 옛 세션·워커 경로는 진다."""
     sys.path.insert(0, HERE)
     import extract, time as _t
+    from datetime import datetime, timezone
+    now = _t.time()
+    iso = lambda t: datetime.fromtimestamp(t, timezone.utc).isoformat()
     d = tempfile.mkdtemp()
-    def _mk(name, n_prompts, old=False):
+    def _mk(name, n_new, n_old=0):
         p = os.path.join(d, name)
         with open(p, "w", encoding="utf-8") as f:
-            for i in range(n_prompts):
-                f.write(json.dumps(_rec(f"진짜 사람 프롬프트 {i}번입니다"), ensure_ascii=False) + "\n")
-        if old:
-            _t_old = _t.time() - 8 * 86400
-            os.utime(p, (_t_old, _t_old))
+            for i in range(n_old):
+                f.write(json.dumps(_rec(f"지난주에 쓴 프롬프트 {i}번입니다", timestamp=iso(now - 10 * 86400)), ensure_ascii=False) + "\n")
+            for i in range(n_new):
+                f.write(json.dumps(_rec(f"이번 주에 쓴 프롬프트 {i}번입니다", timestamp=iso(now - 86400)), ensure_ascii=False) + "\n")
         return p
-    small = _mk("small.jsonl", 2)
-    big = _mk("big.jsonl", 5)
+    fresh = _mk("fresh.jsonl", 5)
+    longrun = _mk("longrun.jsonl", 2, n_old=60)   # 누적 62개지만 창 안엔 2개 → 진다 (9/14·9/21 동일 세션 재채점 버그)
     worker = _mk("orca-workspaces-w1.jsonl", 9)   # 최다지만 워커 경로 → 제외
-    stale = _mk("stale.jsonl", 7, old=True)        # 최다지만 7일 밖 → 제외
-    best, n = extract.pick_best([small, big, worker, stale], _t.time() - 7 * 86400)
-    assert best == big and n == 5, (best, n)
-    best_none, n0 = extract.pick_best([worker, stale], _t.time() - 7 * 86400)
+    cutoff = now - 7 * 86400
+    best, n = extract.pick_best([fresh, longrun, worker], cutoff)
+    assert best == fresh and n == 5, (best, n)
+    # 추출도 같은 창을 쓴다 — 지난주 프롬프트는 나오지 않는다
+    assert len(extract.user_texts(longrun, cutoff)) == 2
+    assert len(extract.user_texts(longrun)) == 62
+    # timestamp 없는 레코드는 창이 걸리면 제외
+    notime = _mk("notime.jsonl", 0)
+    with open(notime, "w", encoding="utf-8") as f:
+        f.write(json.dumps(_rec("시각 정보가 없는 프롬프트입니다"), ensure_ascii=False) + "\n")
+    assert extract.user_texts(notime, cutoff) == []
+    best_none, n0 = extract.pick_best([worker, notime], cutoff)
     assert best_none is None and n0 == 0
-
 
 if __name__ == "__main__":
     test_filters()
