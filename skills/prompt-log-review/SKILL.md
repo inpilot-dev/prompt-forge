@@ -81,12 +81,12 @@ cat > ~/Library/LaunchAgents/com.prompt-forge.weekly-review.plist <<EOF
   <key>ProgramArguments</key>
   <array>
     <string>/bin/zsh</string>
-    <string>$HOME/dev/prompt-forge/skills/prompt-log-review/weekly-review.sh</string>
+    <string>$HOME/dev/tools/prompt-forge/skills/prompt-log-review/weekly-review.sh</string>
   </array>
   <key>StartCalendarInterval</key>
   <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>10</integer><key>Minute</key><integer>17</integer></dict>
-  <key>StandardOutPath</key><string>$HOME/dev/prompt-forge/skills/prompt-log-review/weekly-run.log</string>
-  <key>StandardErrorPath</key><string>$HOME/dev/prompt-forge/skills/prompt-log-review/weekly-run.log</string>
+  <key>StandardOutPath</key><string>$HOME/dev/tools/prompt-forge/skills/prompt-log-review/weekly-run.log</string>
+  <key>StandardErrorPath</key><string>$HOME/dev/tools/prompt-forge/skills/prompt-log-review/weekly-run.log</string>
 </dict>
 </plist>
 EOF
