@@ -70,8 +70,8 @@ ln -sfn "$PWD/skills/prompt-log-review"  ~/.claude/skills/prompt-log-review
 
 forge 엔진은 5단계로 동작한다:
 
-1. **크기 판단** — small(단일 작업) / large(프로젝트급)
-2. **맥락 검사** — 필수 슬롯(small 2·large 3)이 비었으면 그 개수만큼 역인터뷰(최대 3). 질문해도 안 채워지면 빈칸 `[ ]` 프롬프트로 출력.
+1. **크기 판단** — small(단일 작업) / large(프로젝트급). 입력이 말 덤프면 채우기 대신 정리(정보는 하나도 안 빼고 Why·What·How로 재배치). 길이는 크기 신호가 아니다.
+2. **맥락 검사** — 필수 슬롯(small 2·large 3)이 비었으면 빈 슬롯만 담은 Why·What·How 카드 한 장으로 묻는다(최대 3, 말로 1분 답해도 된다). 답해도 안 채워지면 빈칸 `[ ]` 프롬프트로 출력.
 3. **패턴 선택** — `patterns/_INDEX.md`를 읽어 이 요청에 맞는 패턴만 고른다.
 4. **변환 출력** — 변환된 프롬프트(코드블록) + 적용 패턴 목록(한 줄).
 5. **끝** — 실행하지 않는다. (forge-run은 여기서 멈추지 않고 실행)
@@ -96,7 +96,7 @@ forge 엔진은 5단계로 동작한다:
 ```
 prompt-forge/
 ├─ skills/
-│  ├─ prompt-forge/SKILL.md        ← 엔진 (불변). 5단계 변환 절차
+│  ├─ prompt-forge/SKILL.md        ← 엔진. 5단계 변환 절차 (패턴이 늘어도 안 바뀐다)
 │  ├─ prompt-rate-review/SKILL.md  ← 4축 채점기 (+ test-prompts.md 픽스처)
 │  ├─ forge-run/SKILL.md           ← 변환 + 실행 브릿지 (patterns 공유)
 │  └─ prompt-log-review/SKILL.md ← 세션 채점 (+ extract.py 추출기, ledger.md 장부)
@@ -132,10 +132,13 @@ prompt-forge/
 - **v1** — forge 엔진 + 알렉스 16패턴 + 조사 루브릭.
 - **v1.x** — 해외·국내 고수 조사로 패턴 확장 (01~22, 총 118패턴. 엔진 무변경).
 - **v2** — 같은 `patterns/`를 공유하는 스킬 3종: 채점(prompt-rate-review) · 변환(prompt-forge) · 실행(forge-run).
-- **v2.1 (현재)** — E 로그 리뷰어 실현: `prompt-log-review`. 최초 설계는 forge 변환 로그를 데이터원으로 잡았지만,
+- **v2.1** — E 로그 리뷰어 실현: `prompt-log-review`. 최초 설계는 forge 변환 로그를 데이터원으로 잡았지만,
   실사용의 전량은 세션 트랜스크립트에 있고 forge를 안 거친 "맨 프롬프트"가 진짜 실력이라 데이터원을 바꿨다.
   장부(`ledger.md`)가 쌓이면 최약축 추이 → rubric 자기갱신이 다음 차례다.
   장부 축적은 주간 자동 리뷰(launchd 월 10:17 → `weekly-review.sh`, 지난 7일 최다 세션 자동 선정)가 맡는다 — 수동 습관은 5주 실측(ledger 1줄)으로 반증됐다.
+- **v2.2 (현재)** — 말로 하는 프롬프트 대응 (2026-10-25, 알렉스 영상 [3EchTw4UVs8](https://www.youtube.com/watch?v=3EchTw4UVs8)).
+  빈칸 질문을 Why·What·How 카드 한 장으로, 말 덤프 정리 모드(정보 보존), forge-run 정정 구문 게이트, 3패턴 추가.
+  9/1 실측의 '빈칸이 남으면 중에서 멈춘다'를 빈칸 채우는 비용을 낮추는 쪽으로 겨냥했다. 검증: [`docs/2026-10-25-voice-dump-validation.md`](docs/2026-10-25-voice-dump-validation.md).
 - **v3 (자리만)** — 플러그인화. 스킬 4종이 한 repo에 모여 있는 지금 구조가 그 직전 모양이다.
 
 > 채점축 ↔ 슬롯 정합은 **라벨 기준**이다. 개수로는 다르다 — rate는 4축(목표·완료판단·범위·맥락),
