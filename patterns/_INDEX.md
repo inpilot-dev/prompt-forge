@@ -28,6 +28,9 @@
 | 구현위임 | 작동 스냅샷·롤백 (checkpoint-rollback) | 00-silvally-alex.md |
 | 구현위임 | 멀티채널 팬아웃 변환 (multichannel-fanout) | 00-silvally-alex.md |
 | 검증루프 | 회귀 델타 디버깅 (regression-delta-debug) | 00-silvally-alex.md |
+| 컨텍스트주입 | 말로 1분 덤프 (speak-dump-why-what-how) | 00-silvally-alex.md |
+| 킥오프 | 다음 질문 추천받기 (ask-what-to-ask-next) | 00-silvally-alex.md |
+| 구현위임 | 지어내기 금지선 (no-fabrication-line) — 남에게 보일 글 | 00-silvally-alex.md |
 | 리서치위임 | 옵션 메뉴 리서치 (options-menu-research) | 01-simon-willison.md |
 | 구현위임 | 함수 시그니처 지정 (function-signature-spec) | 01-simon-willison.md |
 | 검증루프 | 테스트 즉시 후속 (tests-as-followup) | 01-simon-willison.md |

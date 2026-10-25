@@ -106,7 +106,7 @@ prompt-forge/
 │  ├─ 09~15-*.md                   ← 병렬 리서치 2차 채굴 (Indragie … Avi Chawla)
 │  ├─ 16~20-*.md                   ← 3차 채굴 (조태호·Jesse Vincent·Hamel Husain·Anthropic Eng·SNOWFLOW)
 │  ├─ 21~22-*.md                   ← 4차 채굴 (Reddit — ponytail·second-opinion)
-│  └─ _INDEX.md                    ← | 단계 | 패턴 | 파일 | 역인덱스 (118패턴, 재게시 1행 포함 119행)
+│  └─ _INDEX.md                    ← | 단계 | 패턴 | 파일 | 역인덱스 (121패턴, 재게시 1행 포함 122행)
 ├─ research/
 │  ├─ RUBRIC.md                    ← 출처 입장자격 채점기 (상 2개↑만 입장)
 │  ├─ candidates.md                ← 조사 대상 후보 목록
