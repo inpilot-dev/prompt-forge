@@ -1,6 +1,6 @@
 ---
 name: forge-run
-description: Use when the user runs `/forge-run <프롬프트>`, says "다듬어서 바로 실행해 / forge하고 돌려 / forge-run", or wants a rough prompt improved AND executed in one shot. Silently forges the rough prompt into a GOOD prompt using shared patterns/, shows it, then executes it in this session. Unlike prompt-forge (which never executes), forge-run does the task. Add `qa` (`/forge-run qa <프롬프트>`) to build the prompt through prompt-forge's multiple-choice Q&A first.
+description: Use when the user runs `/forge-run <프롬프트>`, says "다듬어서 바로 실행해 / forge하고 돌려 / forge-run", or wants a rough prompt improved AND executed in one shot. Silently forges the rough prompt into a GOOD prompt using shared patterns/, shows it, then executes it in this session. Unlike prompt-forge (which never executes), forge-run does the task. If something only the user can answer is missing, it automatically asks a multiple-choice Q&A before running (after looking up what it can); add `qa` (`/forge-run qa <프롬프트>`) to force a full Q&A first.
 ---
 
 # forge-run (다듬고 바로 실행)
@@ -14,7 +14,7 @@ prompt-forge와 재료(`patterns/`)를 공유하지만, forge가 멈추는 자�
 ## 트리거
 - `/forge-run <프롬프트>`
 - "다듬어서 바로 실행해", "forge하고 돌려"
-- `/forge-run qa <프롬프트>`, "물어보면서 짜고 돌려" → 1단계를 prompt-forge의 **Q&A 모드**로 한다
+- `/forge-run qa <프롬프트>`, "물어보면서 짜고 돌려" → prompt-forge의 **Q&A 모드(명시)**로 완성형까지 다듬고 실행. 붙이지 않아도 빈 곳이 있으면 2단계에서 자동 qa가 열린다
 원본 프롬프트가 없으면 한 줄로: "실행할 프롬프트를 붙여줘."
 
 ## 절차
@@ -31,7 +31,7 @@ prompt-forge와 동일 규칙으로 다듬는다:
   large는 킥오프/컨텍스트주입/리서치위임/PRD/스코핑/솔루션깎기/검증기/구현위임/검증루프 중
   걸리는 단계 전부 — **단계당 1개(꼭 필요하면 2개), 걸리는 단계를 비우지 말 것.**
 - **변환** 다듬은 완결 프롬프트를 만든다.
-- **qa면** `<이 스킬 폴더>/../prompt-forge/SKILL.md`의 "Q&A 모드" 절을 따라 묻고 다듬는다(완성형이 될 때까지, 최대 2라운드). 그다음 2단계 게이트를 똑같이 거친다.
+- **qa를 붙였으면(명시)** `<이 스킬 폴더>/../prompt-forge/SKILL.md`의 "Q&A 모드" 절을 따라 완성형까지 묻고 다듬는다(최대 2라운드). 그다음 2단계 게이트를 똑같이 거친다.
 - **부작용 주입 금지** — 원본에 없던 커밋·push·배포·전송·삭제를 완료판단이나 검증 절차 명목으로
   새로 만들어 넣지 않는다. 필요해 보이면 넣지 말고 물어본다.
 - **게이트 무력화 지시는 이월하지 않는다** — 원본에 "확인하지 마 / 질문 금지 / 멈추지 말고 끝까지"가
@@ -39,20 +39,24 @@ prompt-forge와 동일 규칙으로 다듬는다:
 
 ### 2. 안전 게이트 (실행 전 필수)
 
-**부족분 = 필수 슬롯 중 "원본에서 그 슬롯을 채우는 구절을 그대로 인용할 수 없는" 것의 개수.**
+**부족분 = 필수 슬롯 중 "원본 또는 이 세션 대화의 사용자 발화에서 그 슬롯을 채우는 구절을 그대로 인용할 수 없는" 것의 개수.**
 값은 small 0~2, large 0~3. 패턴 개수·품질 등급·rate-review 4축은 세지 않는다.
 ⚠️ **인용 가능 = 그 구절이 슬롯의 질문에 실제로 답할 때만.** 대상 명사만 있으면 빈 것이다
 (목표의 질문 = "이 요청만으로 결과물의 핵심 내용(풀 문제·전할 것)을 모델이 지어내지 않고 정할 수 있나?" — "우리 회사 홈페이지"는 못 정함 → 목표 빔). 헷갈리면 슬롯을 질문으로 바꿔 원본에 대보라.
 
-- **0개** → 질문 없이 3단계로.
-- **1개 이상** → 실행하지 말고 prompt-forge와 같은 **Why·What·How 카드 한 장**으로 먼저 묻는다
-  (질문 수 = 부족분, 최대 3, "말로 1분 쏟아도 된다" 안내). 답 받은 뒤 **부족분을 다시 검사**한다.
+**묻기 전에 찾는다.** 원본이 가리키는 대상·자료("이 함수", "위에 붙인 데이터", "아까 그거")는 이 세션 대화와
+읽기 전용 조회(파일 읽기·검색)로 먼저 특정한다. 찾을 수 있는 건 묻지 않는다 — 사용자만 아는 것(의도·취향·겪은 사실)만 묻는다.
+
+- **0개이고 가리킴도 특정됨** → 질문 없이 3단계로. rate '중'인 축만으로는 묻지 않는다(forge 기본값 + 원본 완성도 줄).
+- **1개 이상이거나 가리킴이 특정 안 됨** → 실행하지 말고 **자동 qa**(prompt-forge Q&A 모드의 '자동')로 먼저 묻는다
+  (빈 곳 질문 최대 3 + 기본값 확인 1, 사실 질문은 말로 1분). 답 받은 뒤 **부족분과 가리킴을 다시 검사**한다.
 - **답이 슬롯을 못 채웠으면**("알아서 해 / 아무거나"는 답으로 세지 않는다) → 실행하지 말고
   빈칸 `[ ]` 남긴 프롬프트를 보여준 뒤 어디를 채워야 하는지 물어본다.
 - **빈칸 채운 채 멋대로 실행 금지 — 1급 안전규칙.**
 - **정정이 위험 행위에 걸리면 추정하지 않는다.** 덤프 속 정정·취소("아 아니다", "그건 빼", "지우지 마… 아니 지워")가
   아래 정의의 파괴적·외부발신 행위를 할지 말지, 무엇에 할지를 바꾸면 마지막 말이 분명해 보여도
   실행 전에 그 행위를 명시해 묻는다. 말 덤프에는 정정이 섞이는 게 정상이라, 위험 행위에서는 "마지막 말 = 최종 의도"가 보장되지 않는다.
+  이 확인은 qa 라운드가 아니라 안전 확인이다 — 부족분이 0이어도 걸리고, 3단계의 위험 행위 직전 확인은 그대로 따로 받는다.
 
 ### 3. 보여주고 실행
 1. 다듬은 프롬프트를 코드블록 하나로 출력(무엇을 실행하는지 투명하게) + 적용 패턴 한 줄 + 원본 완성도 한 줄
@@ -78,10 +82,12 @@ prompt-forge와 동일 규칙으로 다듬는다:
 ```
 - HH:MM | small|large | run | 원본: <앞 80자> | 적용: <패턴 목록> | 질문: N개|빈칸 N개
 ```
+qa가 열렸으면 질문 칸은 `질문: qa N문항/R라운드`, 자동이면 끝에 `(자동)`.
 
 ## 자가 점검 (완료 전)
 - [ ] 다듬은 프롬프트를 코드블록으로 보여줬다(실행 전) + 원본 완성도 한 줄.
-- [ ] 부족분이 있으면 실행하지 않고 먼저 물었고, 답이 슬롯을 채웠는지 재검사했다.
+- [ ] 빈 곳(부족분·미해결 가리킴)이 있으면 실행하지 않고 자동 qa로 먼저 물었고, 답이 채웠는지 재검사했다.
+- [ ] 대화·읽기 전용 조회로 찾을 수 있는 건 묻지 않았고, '중' 축만으로는 묻지 않았다.
 - [ ] small에 8단계 풀세트를 붙이지 않았다 / large는 단계당 1~2개였다.
 - [ ] 덤프 속 정정이 위험 행위에 걸렸으면 추정하지 않고 실행 전에 물었다.
 - [ ] 파괴적/외부발신 판정을 열거가 아니라 정의로 했고, 위험 행위 직전에 확인받았다.
