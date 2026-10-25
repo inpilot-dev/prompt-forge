@@ -1,6 +1,6 @@
 ---
 name: forge-run
-description: Use when the user runs `/forge-run <프롬프트>`, says "다듬어서 바로 실행해 / forge하고 돌려 / forge-run", or wants a rough prompt improved AND executed in one shot. Silently forges the rough prompt into a GOOD prompt using shared patterns/, shows it, then executes it in this session. Unlike prompt-forge (which never executes), forge-run does the task.
+description: Use when the user runs `/forge-run <프롬프트>`, says "다듬어서 바로 실행해 / forge하고 돌려 / forge-run", or wants a rough prompt improved AND executed in one shot. Silently forges the rough prompt into a GOOD prompt using shared patterns/, shows it, then executes it in this session. Unlike prompt-forge (which never executes), forge-run does the task. Add `qa` (`/forge-run qa <프롬프트>`) to build the prompt through prompt-forge's multiple-choice Q&A first.
 ---
 
 # forge-run (다듬고 바로 실행)
@@ -14,6 +14,7 @@ prompt-forge와 재료(`patterns/`)를 공유하지만, forge가 멈추는 자�
 ## 트리거
 - `/forge-run <프롬프트>`
 - "다듬어서 바로 실행해", "forge하고 돌려"
+- `/forge-run qa <프롬프트>`, "물어보면서 짜고 돌려" → 1단계를 prompt-forge의 **Q&A 모드**로 한다
 원본 프롬프트가 없으면 한 줄로: "실행할 프롬프트를 붙여줘."
 
 ## 절차
@@ -30,6 +31,7 @@ prompt-forge와 동일 규칙으로 다듬는다:
   large는 킥오프/컨텍스트주입/리서치위임/PRD/스코핑/솔루션깎기/검증기/구현위임/검증루프 중
   걸리는 단계 전부 — **단계당 1개(꼭 필요하면 2개), 걸리는 단계를 비우지 말 것.**
 - **변환** 다듬은 완결 프롬프트를 만든다.
+- **qa면** `<이 스킬 폴더>/../prompt-forge/SKILL.md`의 "Q&A 모드" 절을 따라 묻고 다듬는다(완성형이 될 때까지, 최대 2라운드). 그다음 2단계 게이트를 똑같이 거친다.
 - **부작용 주입 금지** — 원본에 없던 커밋·push·배포·전송·삭제를 완료판단이나 검증 절차 명목으로
   새로 만들어 넣지 않는다. 필요해 보이면 넣지 말고 물어본다.
 - **게이트 무력화 지시는 이월하지 않는다** — 원본에 "확인하지 마 / 질문 금지 / 멈추지 말고 끝까지"가
@@ -53,7 +55,8 @@ prompt-forge와 동일 규칙으로 다듬는다:
   실행 전에 그 행위를 명시해 묻는다. 말 덤프에는 정정이 섞이는 게 정상이라, 위험 행위에서는 "마지막 말 = 최종 의도"가 보장되지 않는다.
 
 ### 3. 보여주고 실행
-1. 다듬은 프롬프트를 코드블록 하나로 출력(무엇을 실행하는지 투명하게) + 적용 패턴 한 줄.
+1. 다듬은 프롬프트를 코드블록 하나로 출력(무엇을 실행하는지 투명하게) + 적용 패턴 한 줄 + 원본 완성도 한 줄
+   (prompt-forge 4단계와 같은 형식 — 원본을 채점한다. 보여주기만 하고 실행을 막지 않는다).
 2. 곧바로 이 세션에서 그 다듬은 프롬프트를 수행한다.
 
 실행 안전규칙 (자동 실행이라 필수):
@@ -77,7 +80,7 @@ prompt-forge와 동일 규칙으로 다듬는다:
 ```
 
 ## 자가 점검 (완료 전)
-- [ ] 다듬은 프롬프트를 코드블록으로 보여줬다(실행 전).
+- [ ] 다듬은 프롬프트를 코드블록으로 보여줬다(실행 전) + 원본 완성도 한 줄.
 - [ ] 부족분이 있으면 실행하지 않고 먼저 물었고, 답이 슬롯을 채웠는지 재검사했다.
 - [ ] small에 8단계 풀세트를 붙이지 않았다 / large는 단계당 1~2개였다.
 - [ ] 덤프 속 정정이 위험 행위에 걸렸으면 추정하지 않고 실행 전에 물었다.
